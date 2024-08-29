@@ -149,6 +149,13 @@ class QueueStatUpdater(MIBUpdater):
             if pq_count < max_queues_half:
                 pq_count = max_queues_half
 
+            # If there is a max_priority_group param in statedb, use that if it is greater    
+            priority_group_count = int(Namespace.dbs_get_all(self.db_conn, mibs.STATE_DB,
+                                                    mibs.buffer_max_parm_table(self.oid_name_map[if_index]))['max_priority_groups'])
+            
+            if(pq_count < priority_group_count):
+                pq_count = priority_group_count
+
             for queue in if_queues:
                 # Get queue type and statistics
                 queue_sai_oid = self.port_queues_map[mibs.queue_key(if_index, queue)]
